@@ -155,167 +155,79 @@ export function LoginForm({ logoUrl, themeColor, logoIcon, loginTheme }: { logoU
           </div>
         )}
 
-        <button 
-          onClick={() => signIn("microsoft-entra-id", { callbackUrl: "/" })}
-          className="btn"
-          style={{ 
-            width: '100%', 
-            padding: '1.1rem', 
-            borderRadius: '16px', 
-            fontSize: '1rem', 
-            fontWeight: 700, 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center', 
-            gap: '1.25rem',
-            transition: 'all 0.3s ease',
-            marginBottom: '2rem',
-            background: '#fff',
-            color: '#000',
-            border: 'none',
-            boxShadow: '0 4px 15px rgba(0,0,0,0.2)'
+        <form 
+          onSubmit={async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.currentTarget);
+            const username = formData.get("username") as string;
+            const password = formData.get("password") as string;
+            await signIn("credentials", { username, password, callbackUrl: "/" });
           }}
+          style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '1rem' }}
         >
-          <svg width="22" height="22" viewBox="0 0 23 23">
-            <path d="M11.5 0H0V11.5H11.5V0Z" fill="#f25022"/>
-            <path d="M23 0H11.5V11.5H23V0Z" fill="#7fbb00"/>
-            <path d="M11.5 11.5H0V23H11.5V11.5Z" fill="#00a1f1"/>
-            <path d="M23 11.5H11.5V23H23V11.5Z" fill="#ffbb00"/>
-          </svg>
-          Sign in with Microsoft
-        </button>
-
-        {/* Admin login link */}
-        <button
-          onClick={() => setShowAdminLogin(true)}
-          style={{
-            background: 'none',
-            border: 'none',
-            color: 'rgba(255,255,255,0.25)',
-            fontSize: '0.75rem',
-            cursor: 'pointer',
-            textDecoration: 'underline',
-            fontFamily: 'inherit',
-            transition: 'color 0.2s'
-          }}
-          onMouseEnter={(e) => (e.currentTarget.style.color = 'rgba(255,255,255,0.5)')}
-          onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(255,255,255,0.25)')}
-        >
-          Admin Login
-        </button>
+          <input 
+            name="username"
+            type="text" 
+            placeholder="Username" 
+            autoComplete="username"
+            style={{ 
+              width: '100%',
+              padding: '1.1rem 1.25rem', 
+              borderRadius: '16px', 
+              background: 'rgba(255,255,255,0.05)', 
+              border: '1px solid rgba(255,255,255,0.1)',
+              color: '#fff',
+              fontSize: '1rem',
+              outline: 'none',
+              transition: 'all 0.3s ease',
+              boxSizing: 'border-box'
+            }}
+          />
+          <input 
+            name="password"
+            type="password" 
+            placeholder="Password" 
+            autoComplete="current-password"
+            style={{ 
+              width: '100%',
+              padding: '1.1rem 1.25rem', 
+              borderRadius: '16px', 
+              background: 'rgba(255,255,255,0.05)', 
+              border: '1px solid rgba(255,255,255,0.1)',
+              color: '#fff',
+              fontSize: '1rem',
+              outline: 'none',
+              transition: 'all 0.3s ease',
+              boxSizing: 'border-box'
+            }}
+          />
+          <button 
+            type="submit"
+            style={{ 
+              width: '100%',
+              padding: '1.1rem', 
+              borderRadius: '16px', 
+              background: themeColor, 
+              color: '#fff',
+              fontWeight: 700,
+              fontSize: '1rem',
+              border: 'none',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              boxShadow: `0 4px 15px rgba(${themeRgb}, 0.3)`,
+              marginTop: '0.5rem'
+            }}
+          >
+            Sign In
+          </button>
+        </form>
 
         <div style={{ marginTop: '2.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', opacity: 0.2 }}>
            <ShieldCheck size={14} />
-           <span style={{ fontSize: '0.65rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.15em' }}>Secure Authentication</span>
+           <span style={{ fontSize: '0.65rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.15em' }}>Secure Local Authentication</span>
         </div>
       </div>
-
-      {/* Admin Login Modal */}
-      {showAdminLogin && (
-        <div 
-          className="modal-overlay"
-          onClick={(e) => e.target === e.currentTarget && setShowAdminLogin(false)}
-          style={{ 
-            position: 'fixed', 
-            inset: 0, 
-            background: 'rgba(0,0,0,0.8)', 
-            backdropFilter: 'blur(10px)', 
-            zIndex: 1000, 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center',
-            padding: '1rem'
-          }}
-        >
-          <div className="glass modal-content fade-in" style={{ 
-            width: '100%', 
-            maxWidth: '400px', 
-            padding: '2.5rem 2rem', 
-            borderRadius: '24px', 
-            border: '1px solid rgba(255,255,255,0.1)',
-            background: 'rgba(20,20,25,0.95)',
-            backdropFilter: 'blur(20px)'
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                <ShieldCheck size={20} style={{ color: themeColor }} />
-                <span style={{ fontSize: '1.1rem', fontWeight: 700, color: '#fff' }}>Admin Login</span>
-              </div>
-              <button 
-                onClick={() => setShowAdminLogin(false)} 
-                style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer', padding: '0.25rem' }}
-              >
-                <X size={20} />
-              </button>
-            </div>
-
-            <form 
-              onSubmit={async (e) => {
-                e.preventDefault();
-                const formData = new FormData(e.currentTarget);
-                const username = formData.get("username") as string;
-                const password = formData.get("password") as string;
-                await signIn("credentials", { username, password, callbackUrl: "/" });
-              }}
-              style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}
-            >
-              <input 
-                name="username"
-                type="text" 
-                placeholder="Username" 
-                autoComplete="username"
-                style={{ 
-                  width: '100%',
-                  padding: '1rem 1.25rem', 
-                  borderRadius: '14px', 
-                  background: 'rgba(255,255,255,0.05)', 
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  color: '#fff',
-                  fontSize: '0.95rem',
-                  outline: 'none',
-                  transition: 'all 0.3s ease',
-                  boxSizing: 'border-box'
-                }}
-              />
-              <input 
-                name="password"
-                type="password" 
-                placeholder="Password" 
-                autoComplete="current-password"
-                style={{ 
-                  width: '100%',
-                  padding: '1rem 1.25rem', 
-                  borderRadius: '14px', 
-                  background: 'rgba(255,255,255,0.05)', 
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  color: '#fff',
-                  fontSize: '0.95rem',
-                  outline: 'none',
-                  transition: 'all 0.3s ease',
-                  boxSizing: 'border-box'
-                }}
-              />
-              <button 
-                type="submit"
-                style={{ 
-                  padding: '1rem', 
-                  borderRadius: '14px', 
-                  background: themeColor, 
-                  color: '#fff',
-                  fontWeight: 700,
-                  fontSize: '0.95rem',
-                  border: 'none',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s ease',
-                  boxShadow: `0 4px 15px rgba(${themeRgb}, 0.3)`
-                }}
-              >
-                Sign In
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
+}
 
       <style jsx global>{`
         .fade-in {

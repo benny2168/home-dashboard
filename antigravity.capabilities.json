@@ -1,0 +1,12 @@
+{
+  "allowExternalCommands": true,
+  "allowedBinaries": [
+    "/usr/local/bin/docker",
+    "/usr/local/bin/docker-compose",
+    "/usr/local/bin/node",
+    "/usr/local/bin/npm"
+  ],
+  "env": {
+    "PATH": "/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin"
+  }
+}

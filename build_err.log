@@ -1,0 +1,140 @@
+#0 building with "multiarch-builder" instance using docker-container driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 2.47kB 0.1s done
+#1 DONE 0.1s
+
+#2 [internal] load metadata for docker.io/library/node:20-alpine
+#2 DONE 0.2s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 136B 0.1s done
+#3 DONE 0.1s
+
+#4 [base 1/1] FROM docker.io/library/node:20-alpine@sha256:fb4cd12c85ee03686f6af5362a0b0d56d50c58a04632e6c0fb8363f609372293
+#4 resolve docker.io/library/node:20-alpine@sha256:fb4cd12c85ee03686f6af5362a0b0d56d50c58a04632e6c0fb8363f609372293 done
+#4 DONE 0.0s
+
+#5 [runner  4/19] RUN addgroup --system --gid 1001 nodejs
+#5 CACHED
+
+#6 [builder 1/5] WORKDIR /app
+#6 CACHED
+
+#7 [runner  2/19] RUN apk add --no-cache libc6-compat
+#7 CACHED
+
+#8 [runner  3/19] RUN npm install prisma@7.6.0 effect
+#8 CACHED
+
+#9 [runner  5/19] RUN adduser --system --uid 1001 nextjs
+#9 CACHED
+
+#10 [internal] load build context
+#10 transferring context: 196.89kB 0.3s done
+#10 DONE 0.4s
+
+#11 [deps 4/4] RUN npm install
+#11 CACHED
+
+#12 [deps 1/4] RUN apk add --no-cache libc6-compat
+#12 CACHED
+
+#13 [deps 2/4] WORKDIR /app
+#13 CACHED
+
+#14 [deps 3/4] COPY package.json package-lock.json* ./
+#14 CACHED
+
+#15 [builder 2/5] COPY --from=deps /app/node_modules ./node_modules
+#15 CACHED
+
+#16 [builder 3/5] COPY . .
+#16 DONE 0.1s
+
+#17 [builder 4/5] RUN npx prisma generate
+#17 2.502 Loaded Prisma config from prisma.config.ts.
+#17 2.502 
+#17 2.752 Prisma schema loaded from prisma/schema.prisma.
+#17 3.371 
+#17 3.371 ✔ Generated Prisma Client (v7.6.0) to ./node_modules/@prisma/client in 248ms
+#17 3.371 
+#17 3.371 Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+#17 3.371 
+#17 3.371 
+#17 3.412 npm notice
+#17 3.412 npm notice New major version of npm available! 10.8.2 -> 11.12.1
+#17 3.412 npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.12.1
+#17 3.412 npm notice To update run: npm install -g npm@11.12.1
+#17 3.412 npm notice
+#17 DONE 3.4s
+
+#18 [builder 5/5] RUN npx next build --webpack
+#18 1.956 ⚠ `eslint` configuration in next.config.ts is no longer supported. See more info here: https://nextjs.org/docs/app/api-reference/cli/next#next-lint-options
+#18 1.966 ⚠ Invalid next.config.ts options detected: 
+#18 1.966 ⚠     Unrecognized key(s) in object: 'swcMinify', 'eslint'
+#18 1.966 ⚠ See more info here: https://nextjs.org/docs/messages/invalid-next-config
+#18 1.987 ▲ Next.js 16.2.2 (webpack)
+#18 1.987 - Environments: .env
+#18 1.987 - Experiments (use with caution):
+#18 1.987   · serverActions
+#18 1.987 
+#18 2.041   Creating an optimized production build ...
+#18 21.76 Failed to compile.
+#18 21.76 
+#18 21.76 ./src/app/admin/tabs/TabsClient.tsx
+#18 21.76 Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+#18 21.76      ,-[/app/src/app/admin/tabs/TabsClient.tsx:619:1]
+#18 21.76  616 |                     </button>
+#18 21.76  617 |                  </div>
+#18 21.76  618 |               </div>
+#18 21.76  619 |                ))}
+#18 21.76      :                  ^
+#18 21.76  620 |            </div>
+#18 21.76  621 |         )}
+#18 21.76      `----
+#18 21.76   x Expected '</', got '}'
+#18 21.76      ,-[/app/src/app/admin/tabs/TabsClient.tsx:621:1]
+#18 21.76  618 |               </div>
+#18 21.76  619 |                ))}
+#18 21.76  620 |            </div>
+#18 21.76  621 |         )}
+#18 21.76      :          ^
+#18 21.76  622 | 
+#18 21.76  623 |        {isModalOpen && (
+#18 21.76  624 |           <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(10px)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '2rem' }}>
+#18 21.76      `----
+#18 21.76 
+#18 21.76 Caused by:
+#18 21.76     Syntax Error
+#18 21.76 
+#18 21.76 Import trace for requested module:
+#18 21.76 ./src/app/admin/tabs/TabsClient.tsx
+#18 21.76 ./src/app/admin/tabs/page.tsx
+#18 21.76 
+#18 21.77 
+#18 21.77 > Build failed because of webpack errors
+#18 ERROR: process "/bin/sh -c npx next build --webpack" did not complete successfully: exit code: 1
+------
+ > [builder 5/5] RUN npx next build --webpack:
+21.76 
+21.76 Caused by:
+21.76     Syntax Error
+21.76 
+21.76 Import trace for requested module:
+21.76 ./src/app/admin/tabs/TabsClient.tsx
+21.76 ./src/app/admin/tabs/page.tsx
+21.76 
+21.77 
+21.77 > Build failed because of webpack errors
+------
+WARNING: No output specified with docker-container driver. Build result will only remain in the build cache. To push result image into registry use --push or to load image into docker use --load
+Dockerfile:37
+--------------------
+  35 |     # Build Next.js
+  36 |     ENV NEXT_TELEMETRY_DISABLED=1
+  37 | >>> RUN npx next build --webpack
+  38 |     
+  39 |     # Production image, copy all the files and run next
+--------------------
+ERROR: failed to build: failed to solve: process "/bin/sh -c npx next build --webpack" did not complete successfully: exit code: 1

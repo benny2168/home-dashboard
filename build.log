@@ -1,0 +1,118 @@
+#0 building with "multiarch-builder" instance using docker-container driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 30B 0.0s
+#1 transferring dockerfile: 2.47kB 0.2s done
+#1 DONE 0.2s
+
+#2 [auth] library/node:pull token for registry-1.docker.io
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/node:20-alpine
+#3 DONE 0.3s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 134B 0.1s
+#4 transferring context: 136B 0.1s done
+#4 DONE 0.1s
+
+#5 [base 1/1] FROM docker.io/library/node:20-alpine@sha256:fb4cd12c85ee03686f6af5362a0b0d56d50c58a04632e6c0fb8363f609372293
+#5 resolve docker.io/library/node:20-alpine@sha256:fb4cd12c85ee03686f6af5362a0b0d56d50c58a04632e6c0fb8363f609372293 done
+#5 DONE 0.0s
+
+#6 [internal] load build context
+#6 transferring context: 8.19kB 0.5s done
+#6 DONE 0.5s
+
+#7 [builder 1/5] WORKDIR /app
+#7 CACHED
+
+#8 [deps 1/4] RUN apk add --no-cache libc6-compat
+#8 CACHED
+
+#9 [deps 2/4] WORKDIR /app
+#9 CACHED
+
+#10 [deps 3/4] COPY package.json package-lock.json* ./
+#10 CACHED
+
+#11 [deps 4/4] RUN npm install
+#11 CACHED
+
+#12 [builder 2/5] COPY --from=deps /app/node_modules ./node_modules
+#12 CACHED
+
+#13 [builder 3/5] COPY . .
+#13 DONE 0.3s
+
+#14 [builder 4/5] RUN npx prisma generate
+#14 3.128 Loaded Prisma config from prisma.config.ts.
+#14 3.128 
+#14 3.406 Prisma schema loaded from prisma/schema.prisma.
+#14 4.054 
+#14 4.054 ✔ Generated Prisma Client (v7.6.0) to ./node_modules/@prisma/client in 277ms
+#14 4.054 
+#14 4.054 Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+#14 4.054 
+#14 4.054 
+#14 4.097 npm notice
+#14 4.097 npm notice New major version of npm available! 10.8.2 -> 11.12.1
+#14 4.097 npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.12.1
+#14 4.097 npm notice To update run: npm install -g npm@11.12.1
+#14 4.097 npm notice
+#14 DONE 4.1s
+
+#15 [builder 5/5] RUN npx next build --webpack
+#15 2.396 ⚠ `eslint` configuration in next.config.ts is no longer supported. See more info here: https://nextjs.org/docs/app/api-reference/cli/next#next-lint-options
+#15 2.420 ⚠ Invalid next.config.ts options detected: 
+#15 2.420 ⚠     Unrecognized key(s) in object: 'swcMinify', 'eslint'
+#15 2.420 ⚠ See more info here: https://nextjs.org/docs/messages/invalid-next-config
+#15 2.475 ▲ Next.js 16.2.2 (webpack)
+#15 2.475 - Environments: .env
+#15 2.475 - Experiments (use with caution):
+#15 2.475   · serverActions
+#15 2.475 
+#15 2.564   Creating an optimized production build ...
+#15 22.69 Failed to compile.
+#15 22.69 
+#15 22.69 ./src/app/admin/actions.ts
+#15 22.69 Module parse failed: Identifier 'reorderTabs' has already been declared (1401:22)
+#15 22.69 File was processed with these loaders:
+#15 22.69  * ./node_modules/next/dist/build/webpack/loaders/next-flight-loader/index.js
+#15 22.69  * ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
+#15 22.69 You may need an additional loader to handle the result of these loaders.
+#15 22.69 |     });
+#15 22.69 | }
+#15 22.69 > export async function reorderTabs(orderedIds) {
+#15 22.69 |     await Promise.all(orderedIds.map((id, index)=>prisma.tab.update({
+#15 22.69 |             where: {
+#15 22.69 
+#15 22.69 Import trace for requested module:
+#15 22.69 ./src/app/admin/actions.ts
+#15 22.69 
+#15 22.70 
+#15 22.70 > Build failed because of webpack errors
+#15 ERROR: process "/bin/sh -c npx next build --webpack" did not complete successfully: exit code: 1
+------
+ > [builder 5/5] RUN npx next build --webpack:
+22.69 | }
+22.69 > export async function reorderTabs(orderedIds) {
+22.69 |     await Promise.all(orderedIds.map((id, index)=>prisma.tab.update({
+22.69 |             where: {
+22.69 
+22.69 Import trace for requested module:
+22.69 ./src/app/admin/actions.ts
+22.69 
+22.70 
+22.70 > Build failed because of webpack errors
+------
+WARNING: No output specified with docker-container driver. Build result will only remain in the build cache. To push result image into registry use --push or to load image into docker use --load
+Dockerfile:37
+--------------------
+  35 |     # Build Next.js
+  36 |     ENV NEXT_TELEMETRY_DISABLED=1
+  37 | >>> RUN npx next build --webpack
+  38 |     
+  39 |     # Production image, copy all the files and run next
+--------------------
+ERROR: failed to build: failed to solve: process "/bin/sh -c npx next build --webpack" did not complete successfully: exit code: 1
