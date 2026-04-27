@@ -227,7 +227,7 @@ export function LoginForm({ logoUrl, themeColor, logoIcon, loginTheme }: { logoU
            <span style={{ fontSize: '0.65rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.15em' }}>Secure Local Authentication</span>
         </div>
       </div>
-}
+
 
       <style jsx global>{`
         .fade-in {
