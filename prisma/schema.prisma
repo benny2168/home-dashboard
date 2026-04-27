@@ -1,0 +1,218 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?   // For local admin/admin
+  department    String?   // Maps to "Department" in MS profile
+  dashboardGroup String   @default("General") // Custom drag-and-drop grouping
+  isAdmin       Boolean   @default(false)
+  canEditContent Boolean  @default(false)
+  iconSize      Int       @default(48) // Custom icon size for the user
+  avatarColor   String?   // Persistent random color for avatar
+  defaultTabId  String?   // Per-user default workspace tab
+  allowedSections Section[] @relation("UserAllowedSections")
+  allowedTabs     Tab[]     @relation("UserAllowedTabs")
+  managedSections Section[] @relation("SectionEditors")
+  managedTabs     Tab[]     @relation("TabEditors")
+  ownedSections   Section[] @relation("SectionOwners")
+  ownedTabs       Tab[]     @relation("TabOwners")
+  allowedThemes   Theme[]   @relation("UserAllowedThemes")
+  managedThemes   Theme[]   @relation("ThemeEditors")
+  ownedThemes     Theme[]   @relation("ThemeOwners")
+  blockedSections Section[] @relation("SectionBlocked")
+  blockedTabs     Tab[]     @relation("TabBlocked")
+  blockedThemes   Theme[]   @relation("ThemeBlocked")
+  accounts      Account[]
+  sessions      Session[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Tab {
+  id          String       @id @default(cuid())
+  title       String
+  icon        String?      // Lucide icon name or URL
+  order       Int          @default(0)
+  organization String?     // If set, only visible to users in this department
+  allowedUsers  User[]     @relation("UserAllowedTabs")
+  editors       User[]     @relation("TabEditors")
+  owners        User[]     @relation("TabOwners")
+  blockedUsers  User[]     @relation("TabBlocked")
+  themeId     String?      // Optional theme override for this tab
+  theme       Theme?       @relation(fields: [themeId], references: [id], onDelete: SetNull)
+  isLibraryItem Boolean    @default(false)
+  description   String?     // Description for the library
+  tabSections TabSection[] // new relation
+  columns     Int          @default(3)
+  departmentAccess TabDepartmentAccess[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model TabDepartmentAccess {
+  id         String   @id @default(cuid())
+  tabId      String
+  department String
+  role       String   // "viewer", "editor", "owner"
+  
+  tab        Tab      @relation(fields: [tabId], references: [id], onDelete: Cascade)
+  
+  @@unique([tabId, department])
+}
+
+model Section {
+  id              String       @id @default(cuid())
+  title           String
+  organization    String?      // If set, only visible to users in this department
+  icon            String?
+  isGlobal        Boolean      @default(true)
+  isLibraryItem   Boolean      @default(false)
+  description     String?      // Description for the library
+  tabSections     TabSection[] // new relation
+  bookmarks       Bookmark[]
+  allowedUsers    User[]       @relation("UserAllowedSections")
+  editors         User[]       @relation("SectionEditors")
+  owners          User[]       @relation("SectionOwners")
+  blockedUsers    User[]       @relation("SectionBlocked")
+  departmentAccess SectionDepartmentAccess[]
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+}
+
+model SectionDepartmentAccess {
+  id         String   @id @default(cuid())
+  sectionId  String
+  department String
+  role       String   // "viewer", "editor"
+  
+  section    Section  @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  
+  @@unique([sectionId, department])
+}
+
+model TabSection {
+  id        String   @id @default(cuid())
+  tabId     String
+  sectionId String
+  order     Int      @default(0)
+  column    Int      @default(0)
+  height    Int?     // Height in pixels, if null it uses auto
+  defaultCollapsed Boolean @default(false) // Start collapsed when loading workspace
+
+  tab       Tab      @relation(fields: [tabId], references: [id], onDelete: Cascade)
+  section   Section  @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+
+  @@unique([tabId, sectionId])
+}
+
+model Bookmark {
+  id            String   @id @default(cuid())
+  title         String
+  url           String
+  description   String?
+  icon          String?  // Lucide icon name or URL
+  longDescription String?  @db.Text // Markdown-supported info panel content
+  openInNewTab  Boolean  @default(true)
+  order         Int      @default(0)
+  sectionId     String
+  section       Section  @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Theme {
+  id            String   @id @default(cuid())
+  name          String   @unique
+  isActive      Boolean  @default(false)
+  dashboardTitle String  @default("Dashboard")
+  logoIcon      String?  // Lucide icon name or URL
+  primaryColor  String   @default("#3b82f6")
+  backgroundColor String? @db.Text
+  darkMode      Boolean  @default(true)
+  glassEffect   Boolean  @default(true)
+  backgroundBlur Int      @default(20)
+  backgroundTint Float    @default(0.5)
+  sectionOpacity Float    @default(0.7)
+  glassOpacity  Float    @default(0.12)
+  iconSize      Int      @default(64) // Default icon size for this theme
+  isLibraryItem Boolean  @default(false)
+  tabs          Tab[]    // Tabs using this theme
+  allowedUsers  User[]   @relation("UserAllowedThemes")
+  editors       User[]   @relation("ThemeEditors")
+  owners        User[]   @relation("ThemeOwners")
+  blockedUsers  User[]   @relation("ThemeBlocked")
+  departmentAccess ThemeDepartmentAccess[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model ThemeDepartmentAccess {
+  id         String   @id @default(cuid())
+  themeId    String
+  department String
+  role       String   // "viewer", "editor", "owner"
+  
+  theme      Theme    @relation(fields: [themeId], references: [id], onDelete: Cascade)
+  
+  @@unique([themeId, department])
+}
+
+model GlobalSettings {
+  id            String   @id @default("global")
+  logoUrlLight       String?  @db.Text
+  logoUrlDark        String?  @db.Text
+  logoUrlSquareLight String?  @db.Text
+  logoUrlSquareDark  String?  @db.Text
+  systemThemeColor String @default("#3b82f6")
+  defaultTabId  String?   // System-wide default workspace tab
+  loginThemeId  String?   // Optional theme for the login page
+  updatedAt     DateTime @updatedAt
+}

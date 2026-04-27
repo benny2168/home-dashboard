@@ -1,0 +1,45 @@
+services:
+  app:
+    image: mtcdtech/homedashboard:latest
+    container_name: homedashboard-app
+    command: node server.js
+    ports:
+      - "4001:4000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://user:password@homedashboard-db:5432/dashboard?schema=public
+      - NEXTAUTH_URL=https://home.server.mtcd.org
+      - AUTH_URL=https://home.server.mtcd.org
+      - AUTH_TRUST_HOST=true
+      - AUTH_MICROSOFT_ENTRA_ID_ID=a82f1c71-902e-4b86-a257-8e4948f1a141
+      - AUTH_MICROSOFT_ENTRA_ID_SECRET=YOUR_ENTRA_ID_SECRET_HERE
+      - AUTH_MICROSOFT_ENTRA_ID_TENANT_ID=e4d1ae10-59a0-4640-bbd4-d88df4b9636b
+      - AUTH_SECRET=YOUR_AUTH_SECRET_HERE
+      - REDEPLOY_DATE=1777088924
+    volumes:
+      - homedashboard_uploads:/app/public/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  db:
+    image: postgres:15-alpine
+    container_name: homedashboard-db
+    restart: always
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=dashboard
+    volumes:
+      - homedashboard_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d dashboard"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  homedashboard_db_data:
+  homedashboard_uploads:
+
