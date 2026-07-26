@@ -13,11 +13,17 @@ export default async function Home() {
   }
 
   const userEmail = session.user?.email;
+  const userIdFromSession = (session.user as any)?.id;
 
-  let dbUser = await prisma.user.findUnique({
-    where: { email: userEmail },
-    select: { id: true, avatarColor: true, isAdmin: true, defaultTabId: true }
-  });
+  let dbUser = userEmail
+    ? await prisma.user.findUnique({
+        where: { email: userEmail },
+        select: { id: true, avatarColor: true, isAdmin: true, defaultTabId: true }
+      })
+    : (userIdFromSession ? await prisma.user.findUnique({
+        where: { id: userIdFromSession },
+        select: { id: true, avatarColor: true, isAdmin: true, defaultTabId: true }
+      }) : null);
 
   const userId = dbUser?.id || (session.user as any)?.id;
   const userDepartment = session.user?.department;

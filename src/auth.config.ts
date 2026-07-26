@@ -49,10 +49,13 @@ export const authConfig = {
       issuer: process.env.AUTH_AUTHENTIK_ISSUER ?? "https://auth.abraham16.com/application/o/dashboard/",
       allowDangerousEmailAccountLinking: true,
       profile(profile: any) {
+        const userEmail = profile.email || 
+          (profile.preferred_username ? (profile.preferred_username.includes("@") ? profile.preferred_username : `${profile.preferred_username}@abraham16.com`) : `${profile.sub}@authentik.local`);
+        const userName = profile.name || profile.preferred_username || userEmail.split("@")[0];
         return {
           id: profile.sub,
-          name: profile.name || profile.preferred_username || "",
-          email: profile.email || profile.preferred_username,
+          name: userName,
+          email: userEmail,
           image: profile.picture || null,
         };
       },
