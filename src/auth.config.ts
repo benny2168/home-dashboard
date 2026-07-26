@@ -46,7 +46,7 @@ export const authConfig = {
     Authentik({
       clientId: process.env.AUTH_AUTHENTIK_ID ?? "3j3HshFL3BRmraagBvkxLQuOBQuGIuehNp6j9rxd",
       clientSecret: process.env.AUTH_AUTHENTIK_SECRET ?? "BsHdkuYnAXjz2dxT9gER5fkRlBVtMirMN2YCOBzTVkm3fm8X5uKDejzQ99JKBxEzlmAbUP6nAzNuV3kBpFJfueMjUNrBkqavh6qVs1TdMtyxFik3iCiUmnW2N1sa17hK",
-      issuer: process.env.AUTH_AUTHENTIK_ISSUER ?? "https://auth.abraham16.com/application/o/dashboard",
+      issuer: process.env.AUTH_AUTHENTIK_ISSUER ?? "https://auth.abraham16.com/application/o/dashboard/",
       allowDangerousEmailAccountLinking: true,
       profile(profile: any) {
         return {
@@ -54,8 +54,6 @@ export const authConfig = {
           name: profile.name || profile.preferred_username || "",
           email: profile.email || profile.preferred_username,
           image: profile.picture || null,
-          groups: profile.groups || [],
-          isAdmin: false, // Default to false, handled in signIn/jwt callbacks
         };
       },
     }),
