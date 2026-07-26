@@ -52,12 +52,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.iconSize = (user as any).iconSize || 48;
         token.canEditContent = (user as any).canEditContent;
 
-        // Finalize admin status for Microsoft Entra ID users based on group ID
-        if (account?.provider === "microsoft-entra-id" && profile) {
-          const entraGroups = (profile as any).groups || [];
-          const ADMIN_GROUP_ID = "f2b5c042-85d0-489b-b343-b103a4ab64dd";
-          if (entraGroups.includes(ADMIN_GROUP_ID)) {
-             console.log("Admin privilege granted to group member:", token.email);
+        // Finalize admin status for Authentik users based on groups or admin list
+        if (account?.provider === "authentik" && profile) {
+          const authentikGroups = (profile as any).groups || [];
+          const ADMIN_GROUPS = ["authentik Admins", "Admins", "admin"];
+          const isAdminGroupMember = authentikGroups.some((g: string) => ADMIN_GROUPS.includes(g));
+          if (isAdminGroupMember) {
+             console.log("Admin privilege granted to Authentik group member:", token.email);
              token.isAdmin = true;
           }
         }
@@ -77,57 +78,33 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
     async signIn({ user, account, profile }: any) {
       console.log("SignIn check for:", user.email, "Provider:", account?.provider);
-      if (account?.provider === "microsoft-entra-id" && profile) {
-        const entraProfile = profile as any;
-        const ADMIN_GROUP_ID = "f2b5c042-85d0-489b-b343-b103a4ab64dd";
-        const isGroupAdmin = (entraProfile.groups || []).includes(ADMIN_GROUP_ID);
+      if (account?.provider === "authentik" && profile) {
+        const authentikProfile = profile as any;
+        const authentikGroups = authentikProfile.groups || [];
+        const ADMIN_GROUPS = ["authentik Admins", "Admins", "admin"];
+        const isGroupAdmin = authentikGroups.some((g: string) => ADMIN_GROUPS.includes(g));
 
-        console.log("Entra ID Sign-in - User:", user.email, "isGroupAdmin:", isGroupAdmin);
-        console.log("Entra profile keys:", Object.keys(entraProfile));
-
-        // Fetch department from Graph API — it's not in the ID token
-        let department = entraProfile.department || "";
-        if (account?.access_token) {
-          try {
-            const ctrl2 = new AbortController();
-            const t2 = setTimeout(() => ctrl2.abort(), 5000);
-            const graphResp = await fetch(
-              "https://graph.microsoft.com/v1.0/me?$select=department,jobTitle",
-              { headers: { Authorization: `Bearer ${account.access_token}` }, signal: ctrl2.signal }
-            );
-            clearTimeout(t2);
-            if (graphResp.ok) {
-              const graphData = await graphResp.json();
-              department = graphData.department || "";
-              console.log("Graph API fetched department:", department, "jobTitle:", graphData.jobTitle);
-            }
-          } catch (err) {
-            console.error("Graph API error in signIn:", err);
-          }
-        }
-
-        (user as any).department = department;
+        console.log("Authentik Sign-in - User:", user.email, "isGroupAdmin:", isGroupAdmin);
 
         if (user.email) {
           try {
             await prisma.user.upsert({
               where: { email: user.email },
               update: { 
-                department,
-                // Auto-sync dashboard group to Entra department
-                ...(department ? { dashboardGroup: department } : {}),
+                name: user.name || undefined,
+                image: user.image || undefined,
                 ...(isGroupAdmin ? { isAdmin: true } : {})
               },
               create: {
                 email: user.email,
                 name: user.name,
                 image: user.image,
-                department,
-                dashboardGroup: department || "General",
+                department: "General",
+                dashboardGroup: "General",
                 isAdmin: isGroupAdmin,
               },
             });
-            console.log("User upserted — department:", department, "dashboardGroup:", department || "General");
+            console.log("Authentik User upserted:", user.email);
           } catch (error) {
             console.error("Failed to upsert user during sign in:", error);
           }

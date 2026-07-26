@@ -1,4 +1,4 @@
-import MicrosoftEntraID from "next-auth/providers/microsoft-entra-id";
+import Authentik from "next-auth/providers/authentik";
 import type { NextAuthConfig } from "next-auth";
 
 export const authConfig = {
@@ -43,24 +43,18 @@ export const authConfig = {
     },
   },
   providers: [
-    MicrosoftEntraID({
-      clientId: process.env.AUTH_MICROSOFT_ENTRA_ID_ID ?? "missing_id",
-      clientSecret: process.env.AUTH_MICROSOFT_ENTRA_ID_SECRET ?? "missing_secret",
-      issuer: `https://login.microsoftonline.com/${process.env.AUTH_MICROSOFT_ENTRA_ID_TENANT_ID || "common"}/v2.0`,
-      authorization: {
-        params: {
-          scope: "openid profile email offline_access https://graph.microsoft.com/User.Read",
-          prompt: "select_account",
-        },
-      },
+    Authentik({
+      clientId: process.env.AUTH_AUTHENTIK_ID ?? "3j3HshFL3BRmraagBvkxLQuOBQuGIuehNp6j9rxd",
+      clientSecret: process.env.AUTH_AUTHENTIK_SECRET ?? "BsHdkuYnAXjz2dxT9gER5fkRlBVtMirMN2YCOBzTVkm3fm8X5uKDejzQ99JKBxEzlmAbUP6nAzNuV3kBpFJfueMjUNrBkqavh6qVs1TdMtyxFik3iCiUmnW2N1sa17hK",
+      issuer: process.env.AUTH_AUTHENTIK_ISSUER ?? "https://auth.abraham16.com/application/o/dashboard",
       allowDangerousEmailAccountLinking: true,
       profile(profile: any) {
         return {
           id: profile.sub,
-          name: profile.displayName || profile.name || "",
+          name: profile.name || profile.preferred_username || "",
           email: profile.email || profile.preferred_username,
-          image: null,
-          department: profile.department || "",
+          image: profile.picture || null,
+          groups: profile.groups || [],
           isAdmin: false, // Default to false, handled in signIn/jwt callbacks
         };
       },

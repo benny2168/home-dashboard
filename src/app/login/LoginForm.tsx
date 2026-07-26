@@ -155,6 +155,37 @@ export function LoginForm({ logoUrl, themeColor, logoIcon, loginTheme }: { logoU
           </div>
         )}
 
+        <button
+          onClick={() => signIn("authentik", { callbackUrl: "/" })}
+          style={{
+            width: '100%',
+            padding: '1.1rem',
+            borderRadius: '16px',
+            background: themeColor,
+            color: '#fff',
+            fontWeight: 700,
+            fontSize: '1rem',
+            border: 'none',
+            cursor: 'pointer',
+            transition: 'all 0.3s ease',
+            boxShadow: `0 4px 15px rgba(${themeRgb}, 0.4)`,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '0.75rem',
+            marginBottom: '1.5rem'
+          }}
+        >
+          <LogIn size={20} />
+          Sign in with Authentik
+        </button>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', margin: '1.5rem 0', opacity: 0.3 }}>
+          <div style={{ flex: 1, height: '1px', background: '#fff' }} />
+          <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em' }}>or local login</span>
+          <div style={{ flex: 1, height: '1px', background: '#fff' }} />
+        </div>
+
         <form 
           onSubmit={async (e) => {
             e.preventDefault();
@@ -163,7 +194,7 @@ export function LoginForm({ logoUrl, themeColor, logoIcon, loginTheme }: { logoU
             const password = formData.get("password") as string;
             await signIn("credentials", { username, password, callbackUrl: "/" });
           }}
-          style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '1rem' }}
+          style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '0.5rem' }}
         >
           <input 
             name="username"
@@ -222,9 +253,12 @@ export function LoginForm({ logoUrl, themeColor, logoIcon, loginTheme }: { logoU
           </button>
         </form>
 
-        <div style={{ marginTop: '2.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', opacity: 0.2 }}>
-           <ShieldCheck size={14} />
-           <span style={{ fontSize: '0.65rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.15em' }}>Secure Local Authentication</span>
+        <div style={{ marginTop: '2.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', opacity: 0.3 }}>
+           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+             <ShieldCheck size={14} />
+             <span style={{ fontSize: '0.65rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.15em' }}>Secure Authentication</span>
+           </div>
+           <span style={{ fontSize: '0.65rem', opacity: 0.7 }}>v1.9.0</span>
         </div>
       </div>
 
