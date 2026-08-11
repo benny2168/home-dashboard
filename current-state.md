@@ -14,6 +14,12 @@
 - **Deployment Target**: Docker / Portainer
 
 ## Status
+- **Active Version**: `v1.10.0`
+- **Performance Fixes**:
+  - SSR enabled in `Dashboard.tsx` (removed component-wide `mounted` gate; initial HTML is now server-rendered).
+  - Un-awaited `user.update` avatarColor write in `page.tsx` (fire-and-forget to eliminate TTFB delay).
+  - Slimmed Prisma department query using `distinct: ['department']` and `where: { department: { not: null } }`.
+  - Added `@next/bundle-analyzer` integration (`perf-reports/bundle-2026-08-11.html`).
 - Reconnected login to Authentik OIDC (`https://auth.abraham16.com/application/o/dashboard`).
 - Environment variables configured in `.env` and documented in `.env.example`.
 - Dependencies installed and Prisma Client generated.
