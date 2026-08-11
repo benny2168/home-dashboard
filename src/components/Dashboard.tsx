@@ -283,8 +283,6 @@ export function Dashboard({
     setCollapsedSections(prev => ({ ...prev, [key]: prev[key] === undefined ? !defaultCollapsed : !prev[key] }));
   };
 
-  if (!mounted) return null;
-
   const hexToRgb = (hex: string) => {
     if (!hex) return "99, 102, 241";
     if (hex.startsWith('rgb')) return hex;
@@ -441,7 +439,7 @@ export function Dashboard({
 
               {/* 5. Light/Dark Mode */}
               <button className="nav-menu-btn" title="Toggle Theme" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} style={{ background: 'transparent', border: '1px solid var(--glass-border)', borderRadius: '8px', cursor: 'pointer', color: 'var(--text)', padding: '0.5rem', display: 'flex', alignItems: 'center' }}>
-                 {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />} <span className="mobile-menu-text">Toggle Dark Mode</span>
+                 {mounted ? (theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />) : <Sun size={18} />} <span className="mobile-menu-text">Toggle Dark Mode</span>
               </button>
              </div>
            </div>
@@ -730,7 +728,7 @@ export function Dashboard({
 
         {/* Version Footer */}
         <div style={{ textAlign: 'center', padding: 'max(1rem, env(safe-area-inset-bottom))', opacity: 0.5, fontSize: '0.8rem', color: 'var(--text)', marginTop: 'auto' }}>
-           v1.1.0
+           v1.10.0
         </div>
      </main>
   );
