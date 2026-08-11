@@ -32,11 +32,12 @@ export default async function Home() {
   if (dbUser && !dbUser.avatarColor) {
      const colors = ["#FF6B6B", "#4ECDC4", "#45B7D1", "#FFA07A", "#98D8C8", "#F7DC6F", "#BB8FCE", "#82E0AA", "#F1948A"];
      const randomColor = colors[Math.floor(Math.random() * colors.length)];
-     await prisma.user.update({
+     dbUser.avatarColor = randomColor;
+     // Fire-and-forget: don't block TTFB on this cosmetic write.
+     prisma.user.update({
         where: { id: userId },
         data: { avatarColor: randomColor }
-     });
-     dbUser.avatarColor = randomColor;
+     }).catch((err) => console.error("avatarColor write failed:", err));
   }
   const avatarColor = dbUser?.avatarColor || "#3b82f6";
 
@@ -89,7 +90,11 @@ export default async function Home() {
       include: { bookmarks: true }
     }),
     prisma.theme.findMany({ orderBy: { name: 'asc' } }),
-    prisma.user.findMany({ select: { department: true } })
+    prisma.user.findMany({
+      select: { department: true },
+      distinct: ['department'],
+      where: { department: { not: null } },
+    })
   ]);
   const allDepartments = Array.from(new Set(allUsers.map((u: any) => u.department || 'General')));
 
